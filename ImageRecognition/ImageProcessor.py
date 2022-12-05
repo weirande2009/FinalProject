@@ -7,6 +7,7 @@ class ImageProcessor:
     """
     Image processor which connect to the remote worker
     """
+    busy = None
     BUFFER_SIZE = 1024
     DATA_SIZE_LENGTH = 16
 
