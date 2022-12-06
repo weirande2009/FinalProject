@@ -37,8 +37,7 @@ class ImageProcessor:
         data = image.tostring()
         # Send image
         self.busy = True
-        self.sock.send(str(len(data)).ljust(self.DATA_SIZE_LENGTH).encode())
-        self.sock.send(data)
+        self.send(data)
         # Receive result
         result = self.receive_all(-1).decode()
         self.busy = False
@@ -50,7 +49,7 @@ class ImageProcessor:
         """
         self.sock.close()
 
-    def receive_all(self, length):
+    def receive_all(self, length=-1):
         """
         Receive all data from worker
         :param length: bytes number
@@ -66,3 +65,7 @@ class ImageProcessor:
             buf += new_buf
             length -= len(new_buf)
         return buf
+
+    def send(self, data: str):
+        self.sock.send(str(len(data)).ljust(self.DATA_SIZE_LENGTH).encode())
+        self.sock.send(data)

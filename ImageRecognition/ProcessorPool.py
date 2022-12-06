@@ -1,14 +1,25 @@
-import ImageProcessor
+from ImageRecognition import ImageProcessor
 import time
 
 
+class Singleton(object):
+    def __init__(self, cls):
+        self._cls = cls
+        self._instance = {}
+
+    def __call__(self):
+        if self._cls not in self._instance:
+            self._instance[self._cls] = self._cls()
+        return self._instance[self._cls]
+
+
+@Singleton
 class ProcessorPool:
     """
     An image processor pool
     """
-
     def __init__(self, worker_number: int):
-        self.processors = [ImageProcessor.ImageProcessor for i in range(worker_number)]
+        self.processors = [ImageProcessor.ImageProcessor("localhost", 35410) for i in range(worker_number)]
         self.imagePool = []
         self.visitedTimes = [0 for i in range(worker_number)]  # record how many times each worker is visited
 

@@ -1,0 +1,22 @@
+{% load static %}
+
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>Your first Spring application</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Image Recognition</title>
+    <link rel="stylesheet" href="{% static "css/homepage.css" %}">
+    <script src="{% static "js/homepage.js" %}"></script>
+    <script src="{% static "js/jquery-1.12.4.js" %}"></script>
+    <script src="{% static "js/jquery-form.js" %}"></script>
+</head>
+<body>
+    <div class="wrapper">
+        <img id="image" src="{% static "img/image.png" %}" alt="Upload Image" onclick="">
+        <label id="label">image class</label>
+        <input type="file" onchange="inputImage(this)"/>
+        <input type="button" onclick="uploadImage()" value="submit"/>
+    </div>
+</body>
+</html>

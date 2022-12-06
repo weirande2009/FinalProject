@@ -1,6 +1,6 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-from django.apps import apps
+from ImageRecognition.ProcessorPool import ProcessorPool
 
 
 def homepage(request):
@@ -14,5 +14,6 @@ def recognize(request):
     :return: the image class name
     """
     image = request.FILES["image"]
-    name = apps.get_app_config('ImageRecognition').processor_pool.recognize(image)
+    processor_pool = ProcessorPool()
+    name = processor_pool.recognize(image)
     return JsonResponse({"name": name})
