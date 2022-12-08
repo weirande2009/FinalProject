@@ -9,7 +9,7 @@ class Singleton(object):
 
     def __call__(self):
         if self._cls not in self._instance:
-            self._instance[self._cls] = self._cls()
+            self._instance[self._cls] = self._cls(1)
         return self._instance[self._cls]
 
 
@@ -18,8 +18,12 @@ class ProcessorPool:
     """
     An image processor pool
     """
+    CONFIG_FILE_NAME = "worker_config"
+
     def __init__(self, worker_number: int):
-        self.processors = [ImageProcessor.ImageProcessor("localhost", 35410) for i in range(worker_number)]
+        worker_address = self.read_config()
+        self.processors = [ImageProcessor.ImageProcessor(worker_address[i][0], worker_address[i][1]) for i in range(
+            worker_number)]
         self.imagePool = []
         self.visitedTimes = [0 for i in range(worker_number)]  # record how many times each worker is visited
 
@@ -57,4 +61,14 @@ class ProcessorPool:
 
         # timeout
         return None
+
+    def read_config(self):
+        f = open(self.CONFIG_FILE_NAME, "r")
+        data = f.read().split("\n")
+        workers_address = []
+        for addr in data:
+            ip = addr.split(" ")[0]
+            port = int(addr.split(" ")[1])
+            workers_address.append((ip, port))
+        return workers_address
 

@@ -7,16 +7,20 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Image Recognition</title>
     <link rel="stylesheet" href="{% static "css/homepage.css" %}">
-    <script src="{% static "js/homepage.js" %}"></script>
     <script src="{% static "js/jquery-1.12.4.js" %}"></script>
     <script src="{% static "js/jquery-form.js" %}"></script>
+    <script src="{% static "js/homepage.js" %}"></script>
 </head>
 <body>
-    <div class="wrapper">
-        <img id="image" src="{% static "img/image.png" %}" alt="Upload Image" onclick="">
-        <label id="label">image class</label>
-        <input type="file" onchange="inputImage(this)"/>
-        <input type="button" onclick="uploadImage()" value="submit"/>
+    <div id="wrapper">
+        <div id="image_div">
+            <img id="image" src="{% static "img/image.png" %}" alt="Upload Image" onclick="">
+        </div>
+        <label id="label">image_class</label>
+        <form id="form_submit" action="/recognize/" method="post" enctype="multipart/form-data" onsubmit="return submitChange();">
+            <input type="file" name="file" id="input" onchange="inputImage(this)"/>
+            <button id="upload" type="submit">upload</button>
+        </form>
     </div>
 </body>
 </html>

@@ -17,6 +17,8 @@ class ImageProcessor:
         self.sock = None
         # whether the processor is working
         self.busy = False
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.connect((self.ip, self.port))
 
     def connect(self):
         """
@@ -31,17 +33,27 @@ class ImageProcessor:
         :param img: image
         :return: the class name of the image
         """
+
         # Convert image into numpy
-        image = cv2.imdecode(np.frombuffer(img, np.uint8), cv2.IMREAD_UNCHANGED)
+        # image = cv2.imdecode(np.frombuffer(img.read(), np.uint8), cv2.IMREAD_UNCHANGED)
+        image = self.save_file(img)
         # Convert image to string
         data = image.tostring()
         # Send image
         self.busy = True
+        # send height
+        self.send(str(image.shape[0]).encode())
+        # send width
+        self.send(str(image.shape[1]).encode())
         self.send(data)
         # Receive result
         result = self.receive_all(-1).decode()
         self.busy = False
         return result
+
+    def save_file(self, img):
+        image = cv2.imread(img)
+        return image
 
     def close(self):
         """
@@ -66,6 +78,6 @@ class ImageProcessor:
             length -= len(new_buf)
         return buf
 
-    def send(self, data: str):
+    def send(self, data: bytes):
         self.sock.send(str(len(data)).ljust(self.DATA_SIZE_LENGTH).encode())
         self.sock.send(data)

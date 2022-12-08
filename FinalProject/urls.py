@@ -18,6 +18,7 @@ from django.urls import path
 from ImageRecognition import views
 
 urlpatterns = [
+    path('admin/', admin.site.urls),
     path('', views.homepage),
     path('recognize/', views.recognize),
 ]
