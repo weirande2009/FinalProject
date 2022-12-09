@@ -93,7 +93,7 @@ class ProcessorPool:
     def read_config(self):
         f = open(self.CONFIG_FILE_NAME, "r")
         data = f.read().split("\n")
-        data = data[:-1]
+        # data = data[:-1]
         workers_address = []
         for addr in data:
             ip = addr.split(" ")[0]
