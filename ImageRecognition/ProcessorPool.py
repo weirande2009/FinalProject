@@ -6,7 +6,7 @@ from .models import Status
 
 
 class Singleton(object):
-    WORKER_NUMBER = 1
+    WORKER_NUMBER = 4
 
     def __init__(self, cls):
         self._cls = cls
@@ -32,8 +32,14 @@ class ProcessorPool:
         self.imagePool = []
         self.visitedTimes = [0 for i in range(worker_number)]  # record how many times each worker is visited
         self.lock = threading.Lock()
-        for i in range(worker_number):
-            Status.objects.create(id=str(i), status=True)
+        all_status = Status.objects.all()
+        if len(all_status) == 0:
+            for i in range(worker_number):
+                Status.objects.create(id=str(i), status=True)
+        else:
+            for status in all_status:
+                status.status = True
+                status.save()
 
     def recognize(self, image) -> str:
 
@@ -72,7 +78,7 @@ class ProcessorPool:
                     status.status = False
                     status.save()
                     self.lock.release()
-                    return self.processors[index]
+                    return self.processors[index], status
             self.lock.release()
 
             # all processors are currently busy
@@ -82,11 +88,12 @@ class ProcessorPool:
             time.sleep(3)
 
         # timeout
-        return None
+        return None, None
 
     def read_config(self):
         f = open(self.CONFIG_FILE_NAME, "r")
         data = f.read().split("\n")
+        data = data[:-1]
         workers_address = []
         for addr in data:
             ip = addr.split(" ")[0]

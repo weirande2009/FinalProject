@@ -7,8 +7,8 @@ pip install django opencv-python-headless
 cd django
 git clone https://github.com/weirande2009/FinalProject.git
 cd FinalProject
-python manager.py makemigration
-python manager.py migrate
-python manager.py runserver 0.0.0.0:8080
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver 0.0.0.0:8080
 
 
