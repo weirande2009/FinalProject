@@ -9,6 +9,6 @@ git clone https://github.com/weirande2009/FinalProject.git
 cd FinalProject
 python manage.py makemigrations
 python manage.py migrate
-python manage.py runserver 0.0.0.0:8080
+nohup python manage.py runserver 0.0.0.0:8080
 
 
