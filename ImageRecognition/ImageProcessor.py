@@ -1,6 +1,6 @@
 import socket
-import numpy as np
 import cv2
+import struct
 
 
 class ImageProcessor:
@@ -16,7 +16,6 @@ class ImageProcessor:
         self.port = port
         self.sock = None
         # whether the processor is working
-        self.busy = False
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((self.ip, self.port))
 
@@ -37,18 +36,14 @@ class ImageProcessor:
         # Convert image into numpy
         # image = cv2.imdecode(np.frombuffer(img.read(), np.uint8), cv2.IMREAD_UNCHANGED)
         image = self.save_file(img)
+        image = cv2.resize(image, (224, 224), interpolation=cv2.INTER_AREA)
         # Convert image to string
         data = image.tostring()
         # Send image
-        self.busy = True
-        # send height
-        self.send(str(image.shape[0]).encode())
-        # send width
-        self.send(str(image.shape[1]).encode())
         self.send(data)
         # Receive result
-        result = self.receive_all(-1).decode()
-        self.busy = False
+        result = self.receive_all().decode()
+        print(result)
         return result
 
     def save_file(self, img):
@@ -61,14 +56,20 @@ class ImageProcessor:
         """
         self.sock.close()
 
-    def receive_all(self, length=-1):
+    def receive_all(self):
         """
         Receive all data from worker
-        :param length: bytes number
         :return: the received data
         """
-        if length == -1:
-            length = int(self.receive_all(self.DATA_SIZE_LENGTH))
+        buf = b''
+        l = struct.calcsize('!i')
+        while l > 0:
+            buf += self.sock.recv(l)
+            l -= len(buf)
+        length = struct.unpack('!i', buf[:4])[0]
+        print("Length:", buf)
+        received_length = 0
+        print("Expected length:", length)
         buf = b''
         while length:
             new_buf = self.sock.recv(length)
@@ -76,8 +77,13 @@ class ImageProcessor:
                 return None
             buf += new_buf
             length -= len(new_buf)
+            received_length += len(new_buf)
+        print("Received length:", received_length)
+        print("Data:", buf)
         return buf
 
     def send(self, data: bytes):
-        self.sock.send(str(len(data)).ljust(self.DATA_SIZE_LENGTH).encode())
+        val = struct.pack('!i', len(data))
+        print(val)
+        self.sock.send(val)
         self.sock.send(data)
